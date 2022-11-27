@@ -1,26 +1,24 @@
-package com.nhira.abnrecipeapp.model;
+package com.nhira.abnrecipeapp.dto;
 
 import com.nhira.abnrecipeapp.utils.RecipeClassification;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import javax.persistence.*;
+import java.util.List;
 
 @Data
-@Entity
-@Inheritance
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
-public class Recipe extends BaseEntity{
+@EqualsAndHashCode(of = "id")
+public class RecipeDto {
+    private String id;
     private String name;
     private long numberOfServings;
-
-    @Enumerated(EnumType.STRING)
     private RecipeClassification classification;
-
-    private String ingredients;
+    private List<IngredientDto> ingredients;
     private String instructions;
 }
