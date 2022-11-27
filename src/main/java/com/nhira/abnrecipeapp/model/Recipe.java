@@ -1,6 +1,6 @@
 package com.nhira.abnrecipeapp.model;
 
-import com.nhira.abnrecipeapp.utils.RecipeClassification;
+import com.nhira.abnrecipeapp.utils.enums.RecipeClassification;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

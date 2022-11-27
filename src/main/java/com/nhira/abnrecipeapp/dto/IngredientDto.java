@@ -1,6 +1,6 @@
 package com.nhira.abnrecipeapp.dto;
 
-import com.nhira.abnrecipeapp.utils.UnitOfMeasure;
+import com.nhira.abnrecipeapp.utils.enums.UnitOfMeasure;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
