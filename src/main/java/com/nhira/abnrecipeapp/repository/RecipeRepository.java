@@ -1,4 +1,7 @@
 package com.nhira.abnrecipeapp.repository;
 
-public class RecipeRepository {
+import com.nhira.abnrecipeapp.model.Recipe;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface RecipeRepository extends JpaRepository<Recipe, String> {
 }
