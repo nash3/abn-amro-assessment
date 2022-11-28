@@ -19,6 +19,6 @@ public class RecipeDto {
     private String name;
     private long numberOfServings;
     private RecipeClassification classification;
-    private List<IngredientDto> ingredients;
+    private List<IngredientDto> ingredientList;
     private String instructions;
 }
