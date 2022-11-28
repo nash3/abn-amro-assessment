@@ -1,0 +1,22 @@
+
+server:
+  port: 8095
+  servlet:
+    context-path: /api
+spring:
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    generate-ddl: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+          lob:
+            non_contextual_creation: true
+  datasource:
+    url: jdbc:postgresql://localhost/recipes_db
+    username: postgres
+    password: postgres

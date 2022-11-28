@@ -1,0 +1,25 @@
+
+server:
+  port: 8095
+  servlet:
+    context-path: /api
+spring:
+  application:
+    name: abn-recipes
+  jpa:
+    database: H2
+    show-sql: true
+    generate-ddl: false
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: CET
+          lob:
+            non_contextual_creation: true
+  profiles:
+    active: postgres
+logging:
+  level:
+    com.nhira.abnrecipeapp: DEBUG
