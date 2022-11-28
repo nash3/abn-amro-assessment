@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface RecipeRepository extends JpaRepository<Recipe, String> {
 
-    // TODO - FIX  INGREDIENTS
     @Query("SELECT r FROM Recipe r WHERE " +
             "(:search IS NULL OR :search = '' " +
             "OR LOWER(r.name) LIKE %:search% " +
@@ -17,10 +16,10 @@ public interface RecipeRepository extends JpaRepository<Recipe, String> {
     )
     Page<Recipe> search(@Param("search") String search, Pageable pageable);
 
-    @Query("SELECT r FROM Recipe r LEFT OUTER JOIN Ingredient i ON i.recipe.id = r.id LEFT OUTER JOIN Instruction inr ON inr.recipe.id = r.id WHERE " +
+    @Query("SELECT r FROM Recipe r  WHERE " +
             "(:classification IS NULL OR :classification = '' OR r.classification = :classification) " +
-            "AND (:instructionSearch IS NULL OR :instructionSearch = '' OR LOWER(inr.description) LIKE %:instructionSearch%) " +
-            "AND (:ingredientName IS NULL OR :ingredientName = ''  OR (:includeIngredient IS TRUE AND i.name = :ingredientName) OR (:includeIngredient IS FALSE AND i.name <> :ingredientName)) " +
+            "AND (:instructionSearch IS NULL OR :instructionSearch = '' OR LOWER(r.instructions) LIKE %:instructionSearch%) " +
+            "AND (:ingredientName IS NULL OR :ingredientName = ''  OR (:includeIngredient IS TRUE AND r.ingredients LIKE %:ingredientName%) OR (:includeIngredient IS FALSE AND i.name NOT LIKE %:ingredientName%)) " +
             "AND (r.numberOfServings = :numberOfServings) "
     )
     Page<Recipe> filter(@Param("classification") String classification,
