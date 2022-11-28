@@ -24,8 +24,6 @@ import org.springframework.util.StringUtils;
 public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
 
-    // TODO - FIX  INGREDIENTS
-
     @Override
     public Page<RecipeDto> getAllRecipes(String search, int page, int size) {
         log.debug("Searching for recipe with search phrase: {}", search);
@@ -53,13 +51,9 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public ApiResponse<RecipeDto> createRecipe(RecipeDto recipeDto) {
-        return userRepository.findById(recipeDto.getUserId()).map(user -> {
-            final Recipe recipe = DtoMapper.MAPPER.toRecipeEntity(recipeDto);
-            recipe.setUser(user);
-            final Recipe savedRecipe = recipeRepository.save(recipe);
-            return Utils.createResponse(DtoMapper.MAPPER.toRecipeDto(savedRecipe),
-                    true, ResponseCode.SUCCESS);
-        }).orElse(Utils.createResponse(null, false, ResponseCode.ERROR, "Referenced user not found"));
+
+        Recipe savedRecipe = recipeRepository.save(DtoMapper.MAPPER.toRecipeEntity(recipeDto));
+        return Utils.createResponse(DtoMapper.MAPPER.toRecipeDto(savedRecipe), true, ResponseCode.SUCCESS);
     }
 
     @Override
