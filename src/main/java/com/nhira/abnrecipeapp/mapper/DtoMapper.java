@@ -17,8 +17,6 @@ import java.util.List;
 @Mapper
 public interface DtoMapper {
 
-    // TODO - FIX MAPPER TO REFLECT JSON OBJECT INGREDIENTS - work on the remaining list to list
-
     DtoMapper MAPPER = Mappers.getMapper(DtoMapper.class);
 
     ObjectMapper objectMapper = new ObjectMapper();

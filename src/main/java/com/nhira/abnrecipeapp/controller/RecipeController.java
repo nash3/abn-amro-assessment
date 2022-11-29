@@ -34,7 +34,7 @@ public class RecipeController {
     @Parameter(in = ParameterIn.DEFAULT, name = "ingredientName", schema = @Schema(type = "String", example = "salmon", description = "Ingredient name"))
     @Parameter(in = ParameterIn.DEFAULT, name = "includeIngredient", schema = @Schema(type = "boolean", defaultValue = "true", description = "Says whether to include or exclude specified ingredient"))
     @Parameter(in = ParameterIn.DEFAULT, name = "numberOfServings", schema = @Schema(type = "long", defaultValue = "1", description = "Number of people recipe can serve"))
-    @Parameter(in = ParameterIn.DEFAULT, name = "classification", schema = @Schema(type = "RecipeClassification", defaultValue = "VEGETARIAN", description = "Whether the recipe is vegetarian"))
+    @Parameter(in = ParameterIn.DEFAULT, name = "classification", schema = @Schema(type = "RecipeClassification", defaultValue = "VEGETARIAN", description = "Whether the recipe is vegetarian or not"))
     public Page<RecipeDto> getRecipes(
             @RequestParam(value = "ingredientName", defaultValue = "", required = false) String ingredientName,
             @RequestParam(value = "instructionSearch", defaultValue = "", required = false) String instructionSearch,
