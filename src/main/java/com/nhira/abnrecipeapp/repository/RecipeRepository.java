@@ -20,8 +20,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, String> {
             "(:classification IS NULL OR :classification = '' OR r.classification = :classification) " +
             "AND (:instructionSearch IS NULL OR :instructionSearch = '' OR LOWER(r.instructions) LIKE %:instructionSearch%) " +
             "AND (:ingredientName IS NULL OR :ingredientName = ''  OR (:includeIngredient IS TRUE AND r.ingredients LIKE %:ingredientName%)" +
-            " OR (:includeIngredient IS FALSE AND i.name NOT LIKE %:ingredientName%)) " +
-            "AND (r.numberOfServings = :numberOfServings) "
+            " OR (:includeIngredient IS FALSE AND r.ingredients NOT LIKE %:ingredientName%)) " +
+            "AND (:numberOfServings = 0L) OR ( r.numberOfServings = :numberOfServings) "
     )
     Page<Recipe> filter(@Param("classification") String classification,
                         @Param("numberOfServings") long numberOfServings,

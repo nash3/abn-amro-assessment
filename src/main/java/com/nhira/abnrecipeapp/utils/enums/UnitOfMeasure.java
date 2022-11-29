@@ -6,4 +6,7 @@ public enum UnitOfMeasure {
     TABLESPOON,
     LITRE,
     MILLILITRE,
+    UNIT,
+    KILOGRAM,
+    GRAM
 }

@@ -40,7 +40,7 @@ public class RecipeServiceImpl implements RecipeService {
         log.debug("Filter recipes with criteria: {}", filter);
         Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreated").descending());
         return recipeRepository.filter(
-                filter.getClassification().name(),
+                filter.getClassification() != null ? filter.getClassification().name() : null,
                 filter.getNumberOfServings(),
                 filter.getInstructionSearch(),
                 filter.getIngredientName(),
