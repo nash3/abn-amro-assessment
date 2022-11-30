@@ -2,6 +2,7 @@ package com.nhira.abnrecipeapp.service.impl;
 
 import com.nhira.abnrecipeapp.dto.RecipeDto;
 import com.nhira.abnrecipeapp.dto.RecipeFilterDto;
+import com.nhira.abnrecipeapp.exceptions.RecipeNotFoundException;
 import com.nhira.abnrecipeapp.mapper.DtoMapper;
 import com.nhira.abnrecipeapp.model.Recipe;
 import com.nhira.abnrecipeapp.repository.RecipeRepository;
@@ -16,7 +17,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -58,7 +58,7 @@ public class RecipeServiceImpl implements RecipeService {
             final Recipe savedRecipe = recipeRepository.save(DtoMapper.MAPPER.toRecipeEntity(recipeDto));
             return Utils.createResponse(DtoMapper.MAPPER.toRecipeDto(savedRecipe),
                     true, ResponseCode.SUCCESS);
-        }).orElse(Utils.createResponse(null, true, ResponseCode.SUCCESS));
+        }).orElseThrow(() -> new RecipeNotFoundException("Recipe with id " + recipeDto.getId() + " was not found "));
     }
 
     @Override
@@ -66,7 +66,7 @@ public class RecipeServiceImpl implements RecipeService {
         return recipeRepository.findById(id)
                 .map(DtoMapper.MAPPER::toRecipeDto)
                 .map(recipeDto -> Utils.createResponse(recipeDto, true, ResponseCode.SUCCESS))
-                .orElse(Utils.createResponse(null, false, ResponseCode.NOT_FOUND));
+                .orElseThrow(() -> new RecipeNotFoundException("Recipe with id " + id + " was not found "));
     }
 
     @Override
@@ -74,6 +74,6 @@ public class RecipeServiceImpl implements RecipeService {
         return recipeRepository.findById(id).map(recipe -> {
             recipeRepository.delete(recipe);
             return Utils.createResponse(DtoMapper.MAPPER.toRecipeDto(recipe), true, ResponseCode.SUCCESS);
-        }).orElse(Utils.createResponse(null, false, ResponseCode.ERROR));
+        }).orElseThrow(() -> new RecipeNotFoundException("Recipe with id " + id + " was not found "));
     }
 }

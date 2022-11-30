@@ -2,6 +2,7 @@ package com.nhira.abnrecipeapp.service.impl;
 
 import com.nhira.abnrecipeapp.dto.RecipeDto;
 import com.nhira.abnrecipeapp.dto.RecipeFilterDto;
+import com.nhira.abnrecipeapp.exceptions.RecipeNotFoundException;
 import com.nhira.abnrecipeapp.mapper.DtoMapper;
 import com.nhira.abnrecipeapp.model.Recipe;
 import com.nhira.abnrecipeapp.repository.RecipeRepository;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 import static com.nhira.abnrecipeapp.utils.RecipeTestDataUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -58,11 +60,13 @@ class RecipeServiceImplTest {
     }
 
     @Test
-    void givenRecipeDtoWithIdThatDoesNotExist_whenUpdateRecipe_shouldNotSaveRecipe() {
+    void givenRecipeDtoWithIdThatDoesNotExist_whenUpdateRecipe_shouldThrowExceptionAndNotSaveRecipe() {
         final Recipe testRecipe = getRecipe(getVeganRecipeDto());
         when(recipeRepository.findById(anyString())).thenReturn(Optional.empty());
 
-        recipeService.updateRecipe(DtoMapper.MAPPER.toRecipeDto(testRecipe));
+        assertThrows(RecipeNotFoundException.class, () -> {
+            recipeService.updateRecipe(DtoMapper.MAPPER.toRecipeDto(testRecipe));
+        });
 
         verify(recipeRepository, times(1)).findById(testRecipe.getId());
         verify(recipeRepository, times(0)).save(any(Recipe.class));
@@ -112,14 +116,15 @@ class RecipeServiceImplTest {
     }
 
     @Test
-    void givenRecipeIDThatDoesNotExist_whenGetRecipe_shouldReturnErrorResponse() {
+    void givenRecipeIDThatDoesNotExist_whenGetRecipe_shouldThrowException() {
         Recipe testRecipe = getRecipe(getVeganRecipeDto());
-        ApiResponse<RecipeDto> expectedResponse = getNotFoundResponse();
+
         when(recipeRepository.findById(anyString())).thenReturn(Optional.empty());
 
-        ApiResponse<RecipeDto> actualResponse = recipeService.getRecipe(testRecipe.getId());
+        assertThrows(RecipeNotFoundException.class, () -> {
+            recipeService.getRecipe(testRecipe.getId());
+        });
 
-        assertThat(actualResponse).isEqualTo(expectedResponse);
         verify(recipeRepository, times(1)).findById(testRecipe.getId());
         verifyNoMoreInteractions(recipeRepository);
     }
@@ -138,14 +143,15 @@ class RecipeServiceImplTest {
     }
 
     @Test
-    void givenRecipeIDThatDoesNotExist_whenDeleteRecipe_shouldReturnErrorResponse() {
+    void givenRecipeIDThatDoesNotExist_whenDeleteRecipe_shouldThrowException() {
         Recipe testRecipe = getRecipe(getVeganRecipeDto());
-        ApiResponse<RecipeDto> expectedResponse = getErrorResponse();
+
         when(recipeRepository.findById(anyString())).thenReturn(Optional.empty());
 
-        ApiResponse<RecipeDto> actualResponse = recipeService.deleteRecipe(testRecipe.getId());
+        assertThrows(RecipeNotFoundException.class, () -> {
+            recipeService.deleteRecipe(testRecipe.getId());
+        });
 
-        assertThat(actualResponse).isEqualTo(expectedResponse);
         verify(recipeRepository, times(1)).findById(anyString());
         verify(recipeRepository, times(0)).delete(any(Recipe.class));
         verifyNoMoreInteractions(recipeRepository);

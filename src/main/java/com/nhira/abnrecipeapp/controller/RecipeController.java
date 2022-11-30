@@ -2,6 +2,7 @@ package com.nhira.abnrecipeapp.controller;
 
 import com.nhira.abnrecipeapp.dto.RecipeDto;
 import com.nhira.abnrecipeapp.dto.RecipeFilterDto;
+import com.nhira.abnrecipeapp.exceptions.RecipeNotFoundException;
 import com.nhira.abnrecipeapp.service.api.RecipeService;
 import com.nhira.abnrecipeapp.utils.ApiResponse;
 import com.nhira.abnrecipeapp.utils.enums.RecipeClassification;
@@ -10,7 +11,11 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,7 +24,12 @@ public class RecipeController {
 
     private final RecipeService recipeService;
 
-    @GetMapping("/generic-search")
+    @PostMapping
+    public ApiResponse<RecipeDto> createRecipe(@Valid @RequestBody RecipeDto recipeDto) {
+        return recipeService.createRecipe(recipeDto);
+    }
+
+    @GetMapping("/find-all")
     @Parameter(in = ParameterIn.DEFAULT, name = "page", schema = @Schema(type = "int", defaultValue = "0", description = "The response is paginated and this field represents the page number"))
     @Parameter(in = ParameterIn.DEFAULT, name = "size", schema = @Schema(type = "int", defaultValue = "10", description = "The response is paginated and this field represents the page size"))
     public Page<RecipeDto> getAllRecipes(
@@ -28,7 +38,7 @@ public class RecipeController {
         return recipeService.getAllRecipes(page, size);
     }
 
-    @GetMapping
+    @GetMapping("/find")
     @Parameter(in = ParameterIn.DEFAULT, name = "ingredientName", schema = @Schema(type = "String", example = "salmon", description = "Ingredient name"))
     @Parameter(in = ParameterIn.DEFAULT, name = "includeIngredient", schema = @Schema(type = "boolean", defaultValue = "true", description = "Says whether to include or exclude specified ingredient"))
     @Parameter(in = ParameterIn.DEFAULT, name = "numberOfServings", schema = @Schema(type = "long", defaultValue = "1", description = "Number of people recipe can serve"))
@@ -54,22 +64,32 @@ public class RecipeController {
     @GetMapping("/{id}")
     @Parameter(in = ParameterIn.PATH, name = "id", schema = @Schema(type = "string", example = "c8c3cc08-6e19-11ed-a1eb-0242ac120002", description = "Recipe ID"))
     public ApiResponse<RecipeDto> getRecipe(@PathVariable("id") String id) {
-        return recipeService.getRecipe(id);
+        try {
+            return recipeService.getRecipe(id);
+        } catch (RecipeNotFoundException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    exception.getMessage(), exception);
+        }
     }
 
     @DeleteMapping("/{id}")
     @Parameter(in = ParameterIn.PATH, name = "id", schema = @Schema(type = "string", example = "c8c3cc08-6e19-11ed-a1eb-0242ac120002", description = "Recipe ID"))
     public ApiResponse<RecipeDto> deleteRecipe(@PathVariable("id") String id) {
-        return recipeService.deleteRecipe(id);
-    }
-
-    @PostMapping
-    public ApiResponse<RecipeDto> createRecipe(@RequestBody RecipeDto recipeDto) {
-        return recipeService.createRecipe(recipeDto);
+        try {
+            return recipeService.deleteRecipe(id);
+        } catch (RecipeNotFoundException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    exception.getMessage(), exception);
+        }
     }
 
     @PutMapping
-    public ApiResponse<RecipeDto> updateRecipe(@RequestBody RecipeDto recipeDto) {
-        return recipeService.updateRecipe(recipeDto);
+    public ApiResponse<RecipeDto> updateRecipe(@Valid @RequestBody RecipeDto recipeDto) {
+        try {
+            return recipeService.updateRecipe(recipeDto);
+        } catch (RecipeNotFoundException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    exception.getMessage(), exception);
+        }
     }
 }

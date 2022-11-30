@@ -36,6 +36,10 @@ public class RecipeTestDataUtil {
                 .build();
     }
 
+    public static ApiResponse<RecipeDto> getRecipeSuccessfulApiResponse(RecipeDto recipeDto) {
+        return Utils.createResponse(recipeDto, true, ResponseCode.SUCCESS);
+    }
+
     public static RecipeFilterDto getFilterDto() {
         return RecipeFilterDto.builder()
                 .ingredientName("egg")

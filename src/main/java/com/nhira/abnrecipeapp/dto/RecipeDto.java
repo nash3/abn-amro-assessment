@@ -6,7 +6,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.beans.factory.annotation.Value;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -15,10 +18,21 @@ import java.util.List;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class RecipeDto {
+
     private String id;
+
+    @NotNull(message = "name is mandatory")
     private String name;
+
+    @NotNull(message = "number of servings should be specified")
     private long numberOfServings;
+
+    @NotNull(message = "classification is mandatory")
     private RecipeClassification classification;
+
+    @NotEmpty(message = "ingredients should be specified")
     private List<IngredientDto> ingredientList;
+
+    @NotNull(message = "instructions are mandatory")
     private String instructions;
 }
