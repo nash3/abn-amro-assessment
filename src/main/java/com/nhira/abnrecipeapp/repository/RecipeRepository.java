@@ -9,13 +9,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface RecipeRepository extends JpaRepository<Recipe, String> {
 
-    @Query("SELECT r FROM Recipe r WHERE " +
-            "(:search IS NULL OR :search = '' " +
-            "OR LOWER(r.name) LIKE %:search% " +
-            "OR LOWER(r.classification) LIKE %:search%) "
-    )
-    Page<Recipe> search(@Param("search") String search, Pageable pageable);
-
     @Query("SELECT r FROM Recipe r  WHERE " +
             "(:classification IS NULL OR :classification = '' OR r.classification = :classification) " +
             "AND (:instructionSearch IS NULL OR :instructionSearch = '' OR LOWER(r.instructions) LIKE %:instructionSearch%) " +

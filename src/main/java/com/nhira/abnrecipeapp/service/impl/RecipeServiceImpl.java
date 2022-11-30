@@ -25,14 +25,10 @@ public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
 
     @Override
-    public Page<RecipeDto> getAllRecipes(String search, int page, int size) {
-        log.debug("Searching for recipe with search phrase: {}", search);
+    public Page<RecipeDto> getAllRecipes(int page, int size) {
+        log.debug("Get all recipes with");
         Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreated").descending());
-        if (StringUtils.hasLength(search)) {
-            return recipeRepository.search(search.toLowerCase(), pageable).map(DtoMapper.MAPPER::toRecipeDto);
-        } else {
-            return recipeRepository.findAll(pageable).map(DtoMapper.MAPPER::toRecipeDto);
-        }
+        return recipeRepository.findAll(pageable).map(DtoMapper.MAPPER::toRecipeDto);
     }
 
     @Override
@@ -70,7 +66,7 @@ public class RecipeServiceImpl implements RecipeService {
         return recipeRepository.findById(id)
                 .map(DtoMapper.MAPPER::toRecipeDto)
                 .map(recipeDto -> Utils.createResponse(recipeDto, true, ResponseCode.SUCCESS))
-                .orElse(Utils.createResponse(null, false, ResponseCode.ERROR));
+                .orElse(Utils.createResponse(null, false, ResponseCode.NOT_FOUND));
     }
 
     @Override

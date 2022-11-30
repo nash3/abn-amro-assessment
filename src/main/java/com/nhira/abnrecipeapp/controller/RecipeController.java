@@ -20,14 +20,12 @@ public class RecipeController {
     private final RecipeService recipeService;
 
     @GetMapping("/generic-search")
-    @Parameter(in = ParameterIn.DEFAULT, name = "search", schema = @Schema(type = "string", example = "salmon", description = "A phrase to filter by"))
     @Parameter(in = ParameterIn.DEFAULT, name = "page", schema = @Schema(type = "int", defaultValue = "0", description = "The response is paginated and this field represents the page number"))
     @Parameter(in = ParameterIn.DEFAULT, name = "size", schema = @Schema(type = "int", defaultValue = "10", description = "The response is paginated and this field represents the page size"))
-    public Page<RecipeDto> getRecipes(
-            @RequestParam(value = "search", defaultValue = "") String search,
+    public Page<RecipeDto> getAllRecipes(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
-        return recipeService.getAllRecipes(search, page, size);
+        return recipeService.getAllRecipes(page, size);
     }
 
     @GetMapping
