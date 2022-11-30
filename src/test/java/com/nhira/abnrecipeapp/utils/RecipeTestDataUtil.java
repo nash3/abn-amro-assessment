@@ -32,7 +32,7 @@ public class RecipeTestDataUtil {
                 .classification(RecipeClassification.VEGETARIAN)
                 .instructions("Add lettuce and water to blender and crush")
                 .ingredientList(getVeganIngredients())
-                .numberOfServings(1)
+                .numberOfServings(2)
                 .build();
     }
 

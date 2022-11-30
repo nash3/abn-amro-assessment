@@ -34,7 +34,7 @@ class RecipeServiceImplTest {
 
     @Test
     void givenRecipeDto_whenCreateRecipe_shouldSaveRecipeAndReturnSavedRecipe() {
-        final Recipe testRecipe = getRecipe();
+        final Recipe testRecipe = getRecipe(getVeganRecipeDto());
         ApiResponse<RecipeDto> expectedRecipeApiResponse = getSuccessfulResponse(testRecipe);
         when(recipeRepository.save(any(Recipe.class))).thenReturn(testRecipe);
 
@@ -47,7 +47,7 @@ class RecipeServiceImplTest {
 
     @Test
     void givenRecipeDto_whenUpdateRecipe_shouldUpdateRecipeAndReturnUpdatedRecipe() {
-        final Recipe testRecipe = getRecipe();
+        final Recipe testRecipe = getRecipe(getVeganRecipeDto());
         when(recipeRepository.findById(anyString())).thenReturn(Optional.of(testRecipe));
         when(recipeRepository.save(any(Recipe.class))).thenReturn(testRecipe);
 
@@ -59,7 +59,7 @@ class RecipeServiceImplTest {
 
     @Test
     void givenRecipeDtoWithIdThatDoesNotExist_whenUpdateRecipe_shouldNotSaveRecipe() {
-        final Recipe testRecipe = getRecipe();
+        final Recipe testRecipe = getRecipe(getVeganRecipeDto());
         when(recipeRepository.findById(anyString())).thenReturn(Optional.empty());
 
         recipeService.updateRecipe(DtoMapper.MAPPER.toRecipeDto(testRecipe));
@@ -71,7 +71,7 @@ class RecipeServiceImplTest {
 
     @Test
     void whenGetAllRecipes_shouldFindAndReturnAllRecipes() {
-        Recipe testRecipe = getRecipe();
+        Recipe testRecipe = getRecipe(getVeganRecipeDto());
         final Page<Recipe> recipes = new PageImpl<>(Arrays.asList(testRecipe));
         when(recipeRepository.findAll(any(Pageable.class))).thenReturn(recipes);
         assertThat(recipeService.getAllRecipes(0,10)).hasSize(1);
@@ -81,7 +81,7 @@ class RecipeServiceImplTest {
 
     @Test
     void givenRecipeFilterDto_whenFilterRecipes_shouldReturnListOfRecipesThatMatchFilterCriterion() {
-        Recipe testRecipe = getRecipe();
+        Recipe testRecipe = getRecipe(getVeganRecipeDto());
         final Page<Recipe> recipes = new PageImpl<>(Arrays.asList(testRecipe));
 
         when(recipeRepository.filter(anyString(),
@@ -100,7 +100,7 @@ class RecipeServiceImplTest {
 
     @Test
     void givenRecipeID_whenGetRecipe_shouldReturnRecipe() {
-        Recipe testRecipe = getRecipe();
+        Recipe testRecipe = getRecipe(getVeganRecipeDto());
         ApiResponse<RecipeDto> expectedResponse = getSuccessfulResponse(testRecipe);
         when(recipeRepository.findById(anyString())).thenReturn(Optional.of(testRecipe));
 
@@ -113,7 +113,7 @@ class RecipeServiceImplTest {
 
     @Test
     void givenRecipeIDThatDoesNotExist_whenGetRecipe_shouldReturnErrorResponse() {
-        Recipe testRecipe = getRecipe();
+        Recipe testRecipe = getRecipe(getVeganRecipeDto());
         ApiResponse<RecipeDto> expectedResponse = getNotFoundResponse();
         when(recipeRepository.findById(anyString())).thenReturn(Optional.empty());
 
@@ -126,7 +126,7 @@ class RecipeServiceImplTest {
 
     @Test
     void givenRecipeID_whenDeleteRecipe_shouldDeleteOneRecipe() {
-        Recipe testRecipe = getRecipe();
+        Recipe testRecipe = getRecipe(getVeganRecipeDto());
         when(recipeRepository.findById(anyString())).thenReturn(Optional.of(testRecipe));
         doNothing().when(recipeRepository).delete(any(Recipe.class));
 
@@ -139,7 +139,7 @@ class RecipeServiceImplTest {
 
     @Test
     void givenRecipeIDThatDoesNotExist_whenDeleteRecipe_shouldReturnErrorResponse() {
-        Recipe testRecipe = getRecipe();
+        Recipe testRecipe = getRecipe(getVeganRecipeDto());
         ApiResponse<RecipeDto> expectedResponse = getErrorResponse();
         when(recipeRepository.findById(anyString())).thenReturn(Optional.empty());
 
