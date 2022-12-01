@@ -96,7 +96,6 @@ class RecipeControllerTest {
         RecipeDto testRecipe = getVeganRecipeDto();
         when(recipeService.getRecipe(anyString())).thenReturn(getRecipeSuccessfulApiResponse(testRecipe));
 
-        RecipeFilterDto recipeFilter = getFilterDto();
         mockMvc.perform(get("/recipes/{id}", testRecipe.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -118,7 +117,6 @@ class RecipeControllerTest {
         RecipeDto testRecipe = getVeganRecipeDto();
         when(recipeService.deleteRecipe(anyString())).thenReturn(getRecipeSuccessfulApiResponse(testRecipe));
 
-        RecipeFilterDto recipeFilter = getFilterDto();
         mockMvc.perform(delete("/recipes/{id}", testRecipe.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -171,6 +169,4 @@ class RecipeControllerTest {
                 .content(mapper.writeValueAsString(recipeDto)))
                 .andExpect(status().isNotFound());
     }
-
-
 }
