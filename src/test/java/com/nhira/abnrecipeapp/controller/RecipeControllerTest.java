@@ -1,6 +1,5 @@
 package com.nhira.abnrecipeapp.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhira.abnrecipeapp.dto.RecipeDto;
 import com.nhira.abnrecipeapp.dto.RecipeFilterDto;
@@ -20,11 +19,11 @@ import java.util.UUID;
 
 import static com.nhira.abnrecipeapp.utils.RecipeTestDataUtil.*;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = RecipeController.class)
 class RecipeControllerTest {
@@ -47,7 +46,7 @@ class RecipeControllerTest {
         mockMvc.perform(post("/recipes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(recipeDto)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().string(containsString(recipeDto.getName())));
 
     }

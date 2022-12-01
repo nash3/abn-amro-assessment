@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,12 +41,16 @@ class RecipeServiceImplTest {
     @Test
     void givenRecipeDto_whenCreateRecipe_shouldSaveRecipeAndReturnSavedRecipe() {
         final Recipe testRecipe = getRecipe(getVeganRecipeDto());
-        ApiResponse<RecipeDto> expectedRecipeApiResponse = getSuccessfulResponse(testRecipe);
         when(recipeRepository.save(any(Recipe.class))).thenReturn(testRecipe);
 
-        ApiResponse<RecipeDto> actualRecipeResponse = recipeService.createRecipe(getVeganRecipeDto());
+        ApiResponse<RecipeDto> actualResponse = recipeService.createRecipe(getVeganRecipeDto());
 
-        assertThat(actualRecipeResponse).isEqualTo(expectedRecipeApiResponse);
+        assertThat(actualResponse).isNotNull();
+        assertThat(actualResponse.isSuccessful()).isTrue();
+        assertThat(actualResponse.getResponseCode()).isEqualTo(ResponseCode.SUCCESS);
+        assertThat(actualResponse.getNarrative()).isEqualTo(ResponseCode.SUCCESS.getDescription());
+        assertThat(actualResponse.getBody()).isNotNull();
+        assertThat(actualResponse.getBody()).isEqualTo(DtoMapper.MAPPER.toRecipeDto(testRecipe));
         verify(recipeRepository, times(1)).save(any(Recipe.class));
         verifyNoMoreInteractions(recipeRepository);
     }
@@ -87,7 +92,7 @@ class RecipeServiceImplTest {
     @Test
     void whenGetAllRecipes_shouldFindAndReturnAllRecipes() {
         Recipe testRecipe = getRecipe(getVeganRecipeDto());
-        final Page<Recipe> recipes = new PageImpl<>(Arrays.asList(testRecipe));
+        final Page<Recipe> recipes = new PageImpl<>(Collections.singletonList(testRecipe));
         when(recipeRepository.findAll(any(Pageable.class))).thenReturn(recipes);
         List<RecipeDto> allRecipes = recipeService.getAllRecipes(0, 10).get().collect(Collectors.toList());
         assertThat(allRecipes).hasSize(1);
@@ -101,11 +106,11 @@ class RecipeServiceImplTest {
     @Test
     void givenRecipeFilterDto_whenFilterRecipes_shouldReturnListOfRecipesThatMatchFilterCriterion() {
         Recipe testRecipe = getRecipe(getVeganRecipeDto());
-        final Page<Recipe> recipes = new PageImpl<>(Arrays.asList(testRecipe));
+        final Page<Recipe> recipes = new PageImpl<>(Collections.singletonList(testRecipe));
 
         when(recipeRepository.filter(anyString(),
                 anyLong(), anyString(),
-                anyString(),anyBoolean(),
+                anyString(), anyBoolean(),
                 any(Pageable.class))).thenReturn(recipes);
         RecipeFilterDto filterDto = getFilterDto();
 
@@ -116,7 +121,7 @@ class RecipeServiceImplTest {
         assertThat(actualRecipeDto).isEqualTo(DtoMapper.MAPPER.toRecipeDto(testRecipe));
         verify(recipeRepository, times(1)).filter(anyString(),
                 anyLong(), anyString(),
-                anyString(),anyBoolean(),
+                anyString(), anyBoolean(),
                 any(Pageable.class));
         verifyNoMoreInteractions(recipeRepository);
     }

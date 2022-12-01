@@ -25,6 +25,7 @@ public class RecipeController {
     private final RecipeService recipeService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<RecipeDto> createRecipe(@Valid @RequestBody RecipeDto recipeDto) {
         return recipeService.createRecipe(recipeDto);
     }
