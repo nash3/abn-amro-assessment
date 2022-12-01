@@ -5,6 +5,7 @@ import com.nhira.abnrecipeapp.dto.RecipeDto;
 import com.nhira.abnrecipeapp.dto.RecipeFilterDto;
 import com.nhira.abnrecipeapp.exceptions.RecipeNotFoundException;
 import com.nhira.abnrecipeapp.service.api.RecipeService;
+import com.nhira.abnrecipeapp.utils.enums.ResponseCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -13,17 +14,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Collections;
 import java.util.UUID;
 
 import static com.nhira.abnrecipeapp.utils.RecipeTestDataUtil.*;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(controllers = RecipeController.class)
 class RecipeControllerTest {
@@ -43,11 +47,16 @@ class RecipeControllerTest {
 
         when(recipeService.createRecipe(any(RecipeDto.class))).thenReturn(getRecipeSuccessfulApiResponse(recipeDto));
 
-        mockMvc.perform(post("/recipes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(recipeDto)))
-                .andExpect(status().isCreated())
-                .andExpect(content().string(containsString(recipeDto.getName())));
+        ResultActions response = mockMvc.perform(post("/recipes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(recipeDto)));
+
+        response.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("$.responseCode", is(ResponseCode.SUCCESS.name())))
+                .andExpect(jsonPath("$.body.name", is(recipeDto.getName())))
+                .andExpect(jsonPath("$.body.instructions", is(recipeDto.getInstructions())))
+                .andExpect(jsonPath("$.body.numberOfServings", is((int) recipeDto.getNumberOfServings())));
 
     }
 
@@ -59,7 +68,8 @@ class RecipeControllerTest {
         mockMvc.perform(post("/recipes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(invalidRecipeDto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(print());
     }
 
     @Test
@@ -69,10 +79,12 @@ class RecipeControllerTest {
 
         when(recipeService.getAllRecipes(anyInt(), anyInt())).thenReturn(recipes);
 
-        mockMvc.perform(get("/recipes/find-all")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-//                .andExpect(jsonPath("$",hasSize(1))); todo - how do i verify size of list returned
+        ResultActions response = mockMvc.perform(get("/recipes/find-all")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.content", hasSize(1)));
     }
 
     @Test
@@ -83,11 +95,16 @@ class RecipeControllerTest {
         when(recipeService.filterRecipes(any(RecipeFilterDto.class),anyInt(), anyInt())).thenReturn(recipes);
 
         RecipeFilterDto recipeFilter = getFilterDto();
-        mockMvc.perform(get("/recipes/find")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(recipeFilter)))
-                .andExpect(status().isOk());
-//                .andExpect(jsonPath("$",hasSize(1)));
+        ResultActions response = mockMvc.perform(get("/recipes/find")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(recipeFilter)));
+
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].name", is(testRecipe.getName())))
+                .andExpect(jsonPath("$.content[0].instructions", is(testRecipe.getInstructions())))
+                .andExpect(jsonPath("$.content[0].numberOfServings", is((int)testRecipe.getNumberOfServings())));
     }
 
     @Test
@@ -96,10 +113,15 @@ class RecipeControllerTest {
         RecipeDto testRecipe = getVeganRecipeDto();
         when(recipeService.getRecipe(anyString())).thenReturn(getRecipeSuccessfulApiResponse(testRecipe));
 
-        mockMvc.perform(get("/recipes/{id}", testRecipe.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString(testRecipe.getName())));
+        ResultActions response = mockMvc.perform(get("/recipes/{id}", testRecipe.getId())
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.responseCode", is(ResponseCode.SUCCESS.name())))
+                .andExpect(jsonPath("$.body.name", is(testRecipe.getName())))
+                .andExpect(jsonPath("$.body.instructions", is(testRecipe.getInstructions())))
+                .andExpect(jsonPath("$.body.numberOfServings", is((int) testRecipe.getNumberOfServings())));
     }
 
     @Test
@@ -109,7 +131,8 @@ class RecipeControllerTest {
 
         mockMvc.perform(get("/recipes/{id}", UUID.randomUUID().toString())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andDo(print());
     }
 
     @Test
@@ -117,10 +140,15 @@ class RecipeControllerTest {
         RecipeDto testRecipe = getVeganRecipeDto();
         when(recipeService.deleteRecipe(anyString())).thenReturn(getRecipeSuccessfulApiResponse(testRecipe));
 
-        mockMvc.perform(delete("/recipes/{id}", testRecipe.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString(testRecipe.getName())));
+        ResultActions response = mockMvc.perform(delete("/recipes/{id}", testRecipe.getId())
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.responseCode", is(ResponseCode.SUCCESS.name())))
+                .andExpect(jsonPath("$.body.name", is(testRecipe.getName())))
+                .andExpect(jsonPath("$.body.instructions", is(testRecipe.getInstructions())))
+                .andExpect(jsonPath("$.body.numberOfServings", is((int) testRecipe.getNumberOfServings())));
     }
 
     @Test
@@ -130,7 +158,8 @@ class RecipeControllerTest {
 
         mockMvc.perform(delete("/recipes/{id}", UUID.randomUUID().toString())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andDo(print());
     }
 
 
@@ -140,11 +169,16 @@ class RecipeControllerTest {
 
         when(recipeService.updateRecipe(any(RecipeDto.class))).thenReturn(getRecipeSuccessfulApiResponse(recipeDto));
 
-        mockMvc.perform(put("/recipes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(recipeDto)))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString(recipeDto.getName())));
+        ResultActions response = mockMvc.perform(put("/recipes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(recipeDto)));
+
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.responseCode", is(ResponseCode.SUCCESS.name())))
+                .andExpect(jsonPath("$.body.name", is(recipeDto.getName())))
+                .andExpect(jsonPath("$.body.instructions", is(recipeDto.getInstructions())))
+                .andExpect(jsonPath("$.body.numberOfServings", is((int) recipeDto.getNumberOfServings())));;
     }
 
     @Test
@@ -155,7 +189,8 @@ class RecipeControllerTest {
         mockMvc.perform(put("/recipes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(invalidRecipeDto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andDo(print());
     }
 
     @Test
@@ -167,6 +202,7 @@ class RecipeControllerTest {
         mockMvc.perform(put("/recipes")
                         .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(recipeDto)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andDo(print());
     }
 }

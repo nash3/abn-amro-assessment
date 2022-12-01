@@ -54,18 +54,6 @@ public class RecipeTestDataUtil {
         return DtoMapper.MAPPER.toRecipeEntity(recipeDto);
     }
 
-    public static ApiResponse<RecipeDto> getSuccessfulResponse(Recipe recipe) {
-       return  Utils.createResponse(DtoMapper.MAPPER.toRecipeDto(recipe), true, ResponseCode.SUCCESS);
-    }
-
-    public static ApiResponse<RecipeDto> getErrorResponse () {
-       return  Utils.createResponse(null, false, ResponseCode.ERROR);
-    }
-
-    public static ApiResponse<RecipeDto> getNotFoundResponse () {
-       return  Utils.createResponse(null, false, ResponseCode.NOT_FOUND);
-    }
-
     public static List<IngredientDto> getNonVeganIngredients() {
         List<IngredientDto> ingredients = new ArrayList<>();
         IngredientDto ingredientDto = IngredientDto.builder()
