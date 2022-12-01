@@ -7,6 +7,7 @@ import com.nhira.abnrecipeapp.mapper.DtoMapper;
 import com.nhira.abnrecipeapp.model.Recipe;
 import com.nhira.abnrecipeapp.repository.RecipeRepository;
 import com.nhira.abnrecipeapp.utils.ApiResponse;
+import com.nhira.abnrecipeapp.utils.enums.ResponseCode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +18,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.nhira.abnrecipeapp.utils.RecipeTestDataUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,7 +56,15 @@ class RecipeServiceImplTest {
         when(recipeRepository.findById(anyString())).thenReturn(Optional.of(testRecipe));
         when(recipeRepository.save(any(Recipe.class))).thenReturn(testRecipe);
 
-        recipeService.updateRecipe(DtoMapper.MAPPER.toRecipeDto(testRecipe));
+        ApiResponse<RecipeDto> actualResponse = recipeService.updateRecipe(DtoMapper.MAPPER.toRecipeDto(testRecipe));
+
+        assertThat(actualResponse).isNotNull();
+        assertThat(actualResponse.isSuccessful()).isTrue();
+        assertThat(actualResponse.getResponseCode()).isEqualTo(ResponseCode.SUCCESS);
+        assertThat(actualResponse.getNarrative()).isEqualTo(ResponseCode.SUCCESS.getDescription());
+        assertThat(actualResponse.getBody()).isNotNull();
+        assertThat(actualResponse.getBody()).isEqualTo(DtoMapper.MAPPER.toRecipeDto(testRecipe));
+
         verify(recipeRepository, times(1)).findById(testRecipe.getId());
         verify(recipeRepository, times(1)).save(any(Recipe.class));
         verifyNoMoreInteractions(recipeRepository);
@@ -78,7 +89,11 @@ class RecipeServiceImplTest {
         Recipe testRecipe = getRecipe(getVeganRecipeDto());
         final Page<Recipe> recipes = new PageImpl<>(Arrays.asList(testRecipe));
         when(recipeRepository.findAll(any(Pageable.class))).thenReturn(recipes);
-        assertThat(recipeService.getAllRecipes(0,10)).hasSize(1);
+        List<RecipeDto> allRecipes = recipeService.getAllRecipes(0, 10).get().collect(Collectors.toList());
+        assertThat(allRecipes).hasSize(1);
+        RecipeDto actualRecipeDto = allRecipes.get(0);
+        assertThat(actualRecipeDto).isNotNull();
+        assertThat(actualRecipeDto).isEqualTo(DtoMapper.MAPPER.toRecipeDto(testRecipe));
         verify(recipeRepository, times(1)).findAll(any(Pageable.class));
         verifyNoMoreInteractions(recipeRepository);
     }
@@ -94,7 +109,11 @@ class RecipeServiceImplTest {
                 any(Pageable.class))).thenReturn(recipes);
         RecipeFilterDto filterDto = getFilterDto();
 
-        assertThat(recipeService.filterRecipes(filterDto, 0, 10)).hasSize(1);
+        List<RecipeDto> recipeList = recipeService.filterRecipes(filterDto, 0, 10).get().collect(Collectors.toList());
+        assertThat(recipeList).hasSize(1);
+        RecipeDto actualRecipeDto = recipeList.get(0);
+        assertThat(actualRecipeDto).isNotNull();
+        assertThat(actualRecipeDto).isEqualTo(DtoMapper.MAPPER.toRecipeDto(testRecipe));
         verify(recipeRepository, times(1)).filter(anyString(),
                 anyLong(), anyString(),
                 anyString(),anyBoolean(),
@@ -105,12 +124,17 @@ class RecipeServiceImplTest {
     @Test
     void givenRecipeID_whenGetRecipe_shouldReturnRecipe() {
         Recipe testRecipe = getRecipe(getVeganRecipeDto());
-        ApiResponse<RecipeDto> expectedResponse = getSuccessfulResponse(testRecipe);
         when(recipeRepository.findById(anyString())).thenReturn(Optional.of(testRecipe));
 
         ApiResponse<RecipeDto> actualResponse = recipeService.getRecipe(testRecipe.getId());
 
-        assertThat(actualResponse).isEqualTo(expectedResponse);
+        assertThat(actualResponse).isNotNull();
+        assertThat(actualResponse.isSuccessful()).isTrue();
+        assertThat(actualResponse.getResponseCode()).isEqualTo(ResponseCode.SUCCESS);
+        assertThat(actualResponse.getNarrative()).isEqualTo(ResponseCode.SUCCESS.getDescription());
+        assertThat(actualResponse.getBody()).isNotNull();
+        assertThat(actualResponse.getBody()).isEqualTo(DtoMapper.MAPPER.toRecipeDto(testRecipe));
+
         verify(recipeRepository, times(1)).findById(testRecipe.getId());
         verifyNoMoreInteractions(recipeRepository);
     }
@@ -135,7 +159,14 @@ class RecipeServiceImplTest {
         when(recipeRepository.findById(anyString())).thenReturn(Optional.of(testRecipe));
         doNothing().when(recipeRepository).delete(any(Recipe.class));
 
-        recipeService.deleteRecipe(testRecipe.getId());
+        ApiResponse<RecipeDto> actualResponse = recipeService.deleteRecipe(testRecipe.getId());
+
+        assertThat(actualResponse).isNotNull();
+        assertThat(actualResponse.isSuccessful()).isTrue();
+        assertThat(actualResponse.getResponseCode()).isEqualTo(ResponseCode.SUCCESS);
+        assertThat(actualResponse.getNarrative()).isEqualTo(ResponseCode.SUCCESS.getDescription());
+        assertThat(actualResponse.getBody()).isNotNull();
+        assertThat(actualResponse.getBody()).isEqualTo(DtoMapper.MAPPER.toRecipeDto(testRecipe));
 
         verify(recipeRepository, times(1)).findById(anyString());
         verify(recipeRepository, times(1)).delete(any(Recipe.class));
