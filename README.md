@@ -7,15 +7,7 @@ filter recipes. The recipe REST API accepts and provides JSON for all endpoints.
 
 The recipe web service was implemented based on the Model-View-Controller(MVC) architectural pattern. MVC separates an
 application into three main logical components: model, view and controller were each component is built to handle a
-specific aspect of an application depending on purpose. The business logic and presentation layer are isolated from each
-other:
-
-- Controller
-    - Contains the REST APIs definition, it exposes the endpoints available for integration
-- Service
-    - It contains the logic and business rules to allow creating, removing, updating and fetching recipes.
-- Repository
-    - The repository layer maps the recipe entity object to the recipe database table
+specific aspect of an application depending on purpose. This segregation makes the application modifiable, scalable and easy to maintain.
 
 ### Frameworks and Modules Used
 
@@ -37,7 +29,7 @@ other:
 
 ### Steps to build and run recipe web service
 
-The default profile creates an embedded in-memory database. However, the `dev` profile uses a Postgres database. In order to persist records into this database, it should be created with properties specified in the [application-dev.yml](src/main/resources/application-dev.yml) property file. The `recipe` table will be created automatically when the application is run. The database only has one table, see ![screenshot](recipe-dbtable.png) 
+The default profile creates an embedded in-memory database. However, the `dev` profile uses a Postgres database. In order to persist records into this database, it should be created with properties specified in the [application-dev.yml](src/main/resources/application-dev.yml) property file. The `recipe` table will be created automatically when the application is run. The database only has one table, see screenshot below ![screenshot](recipe-dbtable.png) 
 ```shell
 create database recipes_db;
 create user postgres with encrypted password 'postgres';
