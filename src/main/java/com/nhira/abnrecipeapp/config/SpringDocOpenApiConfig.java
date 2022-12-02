@@ -13,14 +13,10 @@ public class SpringDocOpenApiConfig {
     @Bean
     public OpenAPI vimbaiRecipesAPI() {
         return new OpenAPI()
-                .info(new Info().title("Vimbai Recipes API")
-                        .description("Vimbai Recipes API")
+                .info(new Info().title("Recipes API")
+                        .description("Vimbainashe's Recipes API")
                         .version("v1")
                         .license(new License().name("Apache 2.0").url("http://springdoc.org"))
-                )
-                .externalDocs(new ExternalDocumentation()
-                        .description("Vimbai Recipes Wiki Documentation")
-                        .url("https://recipes-vimbai.wiki.github.org/docs")
                 );
     }
 

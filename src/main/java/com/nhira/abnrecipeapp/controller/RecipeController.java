@@ -63,7 +63,7 @@ public class RecipeController {
     }
 
     @GetMapping("/{id}")
-    @Parameter(in = ParameterIn.PATH, name = "id", schema = @Schema(type = "string", example = "c8c3cc08-6e19-11ed-a1eb-0242ac120002", description = "Recipe ID"))
+    @Parameter(in = ParameterIn.PATH, name = "id", schema = @Schema(type = "string", example = "c8c3cc08-6e19-11ed-a1eb-0242ac120002", description = "Unique recipe ID"))
     public ApiResponse<RecipeDto> getRecipe(@PathVariable("id") String id) {
         try {
             return recipeService.getRecipe(id);
@@ -74,7 +74,7 @@ public class RecipeController {
     }
 
     @DeleteMapping("/{id}")
-    @Parameter(in = ParameterIn.PATH, name = "id", schema = @Schema(type = "string", example = "c8c3cc08-6e19-11ed-a1eb-0242ac120002", description = "Recipe ID"))
+    @Parameter(in = ParameterIn.PATH, name = "id", schema = @Schema(type = "string", example = "c8c3cc08-6e19-11ed-a1eb-0242ac120002", description = "Unique recipe ID"))
     public ApiResponse<RecipeDto> deleteRecipe(@PathVariable("id") String id) {
         try {
             return recipeService.deleteRecipe(id);

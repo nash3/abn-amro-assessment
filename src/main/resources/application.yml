@@ -19,7 +19,7 @@ spring:
           lob:
             non_contextual_creation: true
   profiles:
-    active: postgres
+    active: dev
 logging:
   level:
     com.nhira.abnrecipeapp: DEBUG
